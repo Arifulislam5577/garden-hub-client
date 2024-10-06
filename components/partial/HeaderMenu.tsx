@@ -1,5 +1,6 @@
 "use client";
 import { useAppSelector } from "@/redux/hooks";
+import { LogOut, PenBox, User } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { buttonVariants } from "../ui/button";
@@ -23,9 +24,17 @@ const HeaderMenu = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>My Post</DropdownMenuItem>
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/profile" className="gap-2 cursor-pointer">
+                <User size={16} /> Profile
+              </Link>
+            </DropdownMenuItem>
+            <button className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 gap-2 cursor-pointer hover:bg-slate-100">
+              <PenBox size={16} /> Create Post
+            </button>
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <LogOut size={16} /> Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (

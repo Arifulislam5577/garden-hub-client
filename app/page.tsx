@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Bookmark,
   HomeIcon,
@@ -8,12 +9,13 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
 
-export default function Home({ children }: Readonly<{ children: ReactNode }>) {
+import Post from "@/components/shared/Post";
+
+export default function Home() {
   return (
     <section className="grid grid-cols-12 gap-5">
-      <div className="col-span-2 bg-white h-[calc(100vh-72px)]">
+      <div className="col-span-2 bg-white h-[calc(100vh-75px)]">
         <div className="px-10 py-5 space-y-5">
           <ul className="space-y-2">
             <Link
@@ -54,7 +56,7 @@ export default function Home({ children }: Readonly<{ children: ReactNode }>) {
             </Link>
           </ul>
           <div className="space-y-5">
-            <p className="font-bold flex items-center justify-between pb-3 border-b border-b-slate-100">
+            <p className="font-medium flex items-center justify-between pb-3 border-b border-b-slate-100">
               My Favorites Post <PenLine size={20} />
             </p>
 
@@ -83,11 +85,77 @@ export default function Home({ children }: Readonly<{ children: ReactNode }>) {
           </div>
         </div>
       </div>
-      <div className="col-span-8 h-[calc(100vh-72px)] overflow-y-auto">
-        {children}
+      <div
+        id="scroll-bar"
+        className="col-span-8 h-[calc(100vh-75px)] overflow-y-auto py-5 space-y-5"
+      >
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Post key={i} />
+        ))}
       </div>
-      <div className="col-span-2 bg-white h-[calc(100vh-72px)]">
-        Lorem ipsum dolor sit amet.
+      <div className="col-span-2 bg-white h-[calc(100vh-75px)]">
+        <div className="px-10 py-5 space-y-5">
+          <div className="space-y-5">
+            <p className="text-sm font-medium text-slate-400 pb-2 border-b border-b-slate-100">
+              Followers
+            </p>
+            <ul className="space-y-3.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <li key={i} className="group">
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage
+                        src={`https://randomuser.me/api/portraits/men/${
+                          i + 50
+                        }.jpg`}
+                        alt="user"
+                      />
+                      <AvatarFallback>US</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm group-hover:font-bold font-medium text-slate-600">
+                        Tom Holland
+                      </p>
+                      <p className="text-slate-400 font-normal text-xs">
+                        New York
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="space-y-5">
+            <p className="text-sm font-medium text-slate-400 pb-2 border-b border-b-slate-100">
+              Following
+            </p>
+            <ul className="space-y-3.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <li key={i} className="group">
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage
+                        src={`https://randomuser.me/api/portraits/men/${
+                          i + 50
+                        }.jpg`}
+                        alt="user"
+                      />
+                      <AvatarFallback>US</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm group-hover:font-bold font-medium text-slate-600">
+                        Tom Holland
+                      </p>
+                      <p className="text-slate-400 font-normal text-xs">
+                        New York
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
   );
