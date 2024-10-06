@@ -33,6 +33,7 @@ const SignIn = () => {
     },
   });
   const { control, handleSubmit, reset } = form;
+
   const onSubmit = handleSubmit(async (value) => {
     const { data, token } = await signIn({
       password: value.pass,
@@ -54,6 +55,7 @@ const SignIn = () => {
       toast.error(err?.data?.message);
     }
   }, [error, isError, isSuccess, reset, err?.data]);
+
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>

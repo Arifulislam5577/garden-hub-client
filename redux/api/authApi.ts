@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
 import { RootState } from "../store";
 
 export const authApi = createApi({
@@ -24,6 +25,21 @@ export const authApi = createApi({
         method: "POST",
         body: data,
       }),
+
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          console.log(data);
+          const token = data.token;
+          Cookies.set("token", token, {
+            expires: 7,
+            secure: true,
+            sameSite: "strict",
+          });
+        } catch (error) {
+          console.error("Error setting token in cookie:", error);
+        }
+      },
     }),
     signUp: builder.mutation({
       query: (data) => ({
