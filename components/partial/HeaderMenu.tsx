@@ -1,30 +1,11 @@
 "use client";
-import { userLogout } from "@/redux/features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import Cookies from "js-cookie";
-import { LogOut, PenBox, User } from "lucide-react";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { buttonVariants } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 
 const HeaderMenu = () => {
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
-
-  const handleLogout = () => {
-    dispatch(userLogout());
-    Cookies.remove("token", { path: "" });
-  };
-
   return (
     <div className="flex space-x-5 items-center">
-      {user ? (
+      {/* {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>
@@ -55,7 +36,14 @@ const HeaderMenu = () => {
             Sign Up
           </Link>
         </>
-      )}
+      )} */}
+
+      <Link href="/sign-in" className={buttonVariants({ variant: "link" })}>
+        Sign In
+      </Link>
+      <Link href="/sign-up" className={buttonVariants()}>
+        Sign Up
+      </Link>
     </div>
   );
 };

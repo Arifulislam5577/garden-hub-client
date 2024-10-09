@@ -1,11 +1,7 @@
 "use client";
-import { useSignUpMutation } from "@/redux/api/authApi";
-import { TErrorResponse } from "@/types";
 import { signUpValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -18,8 +14,6 @@ import {
 import { Input } from "../ui/input";
 
 const SignUp = () => {
-  const [signUp, { isLoading, isError, isSuccess, error }] =
-    useSignUpMutation();
   const form = useForm({
     resolver: zodResolver(signUpValidator),
     defaultValues: {
@@ -30,28 +24,15 @@ const SignUp = () => {
       phone: "",
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
   const onSubmit = handleSubmit((data) => {
     const userInfo = {
       ...data,
       password: data.pass,
     };
 
-    signUp(userInfo);
+    console.log(userInfo);
   });
-
-  const err = error as TErrorResponse;
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toast("Sign up successfully");
-    }
-
-    if (isError) {
-      toast.error(err?.data?.message);
-    }
-  }, [error, isError, isSuccess, reset, err?.data]);
 
   return (
     <Form {...form}>
@@ -141,8 +122,8 @@ const SignUp = () => {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading} type="submit" className="w-full">
-          {isLoading ? "Loading..." : "Sign Up"}
+        <Button type="submit" className="w-full">
+          Sign Up
         </Button>
       </form>
     </Form>

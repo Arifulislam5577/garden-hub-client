@@ -1,5 +1,4 @@
 "use client";
-import { useUser } from "@/components/shared/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,20 +10,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForgotPassMutation } from "@/redux/api/authApi";
-import { TErrorResponse } from "@/types";
 import { changePasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 const ChangePassword = () => {
-  const { user } = useUser();
-  const [sendCode, { isLoading, isError, isSuccess, error }] =
-    useForgotPassMutation();
-
   const form = useForm({
     resolver: zodResolver(changePasswordValidator),
     defaultValues: {
@@ -33,24 +23,11 @@ const ChangePassword = () => {
       oldPassword: "",
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
   const onSubmit = handleSubmit((value) => {
-    sendCode({ ...value });
+    console.log(value);
   });
 
-  const err = error as TErrorResponse;
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toast("Reset Token sent to your email");
-      redirect("/reset-password");
-    }
-
-    if (isError) {
-      toast.error(err?.data?.message);
-    }
-  }, [error, isError, isSuccess, reset, err?.data]);
   return (
     <div className="flex basis-0 items-start gap-10">
       <div className="basis-1/3 flex flex-col gap-5">
@@ -59,10 +36,10 @@ const ChangePassword = () => {
           <AvatarFallback>CF</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-xl font-bold">{user?.name}</h1>
+          {/* <h1 className="text-xl font-bold">{user?.name}</h1>
           <p className="text-slate-500">{user?.email}</p>
           <p className="text-slate-500">{user?.address}</p>
-          <p className="text-slate-500">{user?.phone}</p>
+          <p className="text-slate-500">{user?.phone}</p> */}
         </div>
       </div>
       <Form {...form}>
@@ -119,8 +96,8 @@ const ChangePassword = () => {
             )}
           />
 
-          <Button disabled={isLoading} type="submit" className="w-full">
-            {isLoading ? "Loading..." : "Change Password"}
+          <Button type="submit" className="w-full">
+            Change Password
           </Button>
         </form>
       </Form>

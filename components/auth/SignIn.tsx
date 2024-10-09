@@ -1,15 +1,8 @@
 "use client";
-import { useSignInMutation } from "@/redux/api/authApi";
-import { userLogin } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
-import { TErrorResponse } from "@/types";
 import { signInValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -22,10 +15,6 @@ import {
 import { Input } from "../ui/input";
 
 const SignIn = () => {
-  const dispatch = useAppDispatch();
-  const [signIn, { isLoading, isError, isSuccess, error }] =
-    useSignInMutation();
-
   const form = useForm({
     resolver: zodResolver(signInValidator),
     defaultValues: {
@@ -33,30 +22,11 @@ const SignIn = () => {
       pass: "",
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
 
   const onSubmit = handleSubmit(async (value) => {
-    const { data, token } = await signIn({
-      password: value.pass,
-      ...value,
-    }).unwrap();
-
-    dispatch(userLogin({ user: data, token }));
+    console.log(value);
   });
-
-  const err = error as TErrorResponse;
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toast("Sign up successfully");
-      redirect("/");
-    }
-
-    if (isError) {
-      toast.error(err?.data?.message);
-    }
-  }, [error, isError, isSuccess, reset, err?.data]);
 
   return (
     <Form {...form}>
@@ -100,8 +70,8 @@ const SignIn = () => {
             </FormItem>
           )}
         />
-        <Button disabled={isLoading} type="submit" className="w-full">
-          {isLoading ? "Loading..." : "Sign In"}
+        <Button type="submit" className="w-full">
+          Sign In
         </Button>
         <div className="text-right mt-3">
           <Link

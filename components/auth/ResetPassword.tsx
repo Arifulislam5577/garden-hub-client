@@ -1,12 +1,7 @@
 "use client";
-import { useResetPassMutation } from "@/redux/api/authApi";
-import { TErrorResponse } from "@/types";
 import { resetPasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -19,9 +14,6 @@ import {
 import { Input } from "../ui/input";
 
 const ResetPassword = () => {
-  const [resetPass, { isLoading, isError, isSuccess, error }] =
-    useResetPassMutation();
-
   const form = useForm({
     resolver: zodResolver(resetPasswordValidator),
     defaultValues: {
@@ -29,28 +21,15 @@ const ResetPassword = () => {
       token: "",
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
   const onSubmit = handleSubmit((value) => {
     const resetData = {
       password: value.pass,
       resetToken: value.token,
     };
-    resetPass(resetData);
+    console.log(resetData);
   });
 
-  const err = error as TErrorResponse;
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toast("Password Reset Successfully");
-      redirect("/sign-in");
-    }
-
-    if (isError) {
-      toast.error(err?.data?.message);
-    }
-  }, [error, isError, isSuccess, reset, err?.data]);
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>
@@ -82,8 +61,8 @@ const ResetPassword = () => {
           )}
         />
 
-        <Button disabled={isLoading} type="submit" className="w-full">
-          {isLoading ? "Resetting..." : "Reset Token"}
+        <Button type="submit" className="w-full">
+          Reset Token
         </Button>
       </form>
     </Form>

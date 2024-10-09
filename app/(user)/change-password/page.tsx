@@ -1,12 +1,7 @@
 "use client";
-import { useForgotPassMutation } from "@/redux/api/authApi";
-import { TErrorResponse } from "@/types";
 import { changePasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,9 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 
 const ChangePassword = () => {
-  const [sendCode, { isLoading, isError, isSuccess, error }] =
-    useForgotPassMutation();
-
   const form = useForm({
     resolver: zodResolver(changePasswordValidator),
     defaultValues: {
@@ -31,24 +23,11 @@ const ChangePassword = () => {
       oldPassword: "",
     },
   });
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
   const onSubmit = handleSubmit((value) => {
-    sendCode({ ...value });
+    console.log(value);
   });
 
-  const err = error as TErrorResponse;
-
-  useEffect(() => {
-    if (isSuccess) {
-      reset();
-      toast("Reset Token sent to your email");
-      redirect("/reset-password");
-    }
-
-    if (isError) {
-      toast.error(err?.data?.message);
-    }
-  }, [error, isError, isSuccess, reset, err?.data]);
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>
@@ -100,8 +79,8 @@ const ChangePassword = () => {
           )}
         />
 
-        <Button disabled={isLoading} type="submit" className="w-full">
-          {isLoading ? "Loading..." : "Change Password"}
+        <Button type="submit" className="w-full">
+          Change Password
         </Button>
       </form>
     </Form>
