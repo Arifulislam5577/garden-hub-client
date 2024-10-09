@@ -23,7 +23,7 @@ import GardenImg from "@/public/garden.jpg";
 
 const Post = () => {
   return (
-    <div className="bg-white rounded-xl p-5 space-y-2.5">
+    <div className="bg-white rounded-xl p-5 space-y-2.5 mx-auto max-w-3xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Avatar className="border-2 border-slate-100">

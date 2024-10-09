@@ -81,13 +81,21 @@ const changePasswordValidator = z.object({
     .min(6, {
       message: "New Password must be at least 6 characters",
     }),
-  oldPassword: z
+  newPasswordConfirm: z
     .string({
-      required_error: "New Password is required",
+      required_error: "Confirm New Password is required",
       invalid_type_error: "New Password must be a string",
     })
     .min(6, {
       message: "New Password must be at least 6 characters",
+    }),
+  oldPassword: z
+    .string({
+      required_error: "Current Password is required",
+      invalid_type_error: "Current Password must be a string",
+    })
+    .min(6, {
+      message: "Current Password must be at least 6 characters",
     }),
 });
 

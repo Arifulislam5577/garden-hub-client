@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "./lib/getCurrentUser";
+import { getCurrentUser } from "./actions/actions";
 
 const AuthRoutes = [
   "/sign-in",
@@ -17,8 +17,9 @@ const roleBasedRoutes = {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
   const user = await getCurrentUser();
+
+  console.log(user);
 
   if (!user) {
     if (AuthRoutes.includes(pathname)) {
@@ -30,10 +31,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (user?.role && roleBasedRoutes[user?.role as Role]) {
-    const routes = roleBasedRoutes[user?.role as Role];
+  const userRole = user?.role as Role;
 
-    if (routes.some((route) => RegExp(route).exec(pathname))) {
+  if (userRole && roleBasedRoutes[userRole]) {
+    const allowedRoutes = roleBasedRoutes[userRole];
+
+    const hasAccess = allowedRoutes.some((route) => route.test(pathname));
+
+    if (hasAccess) {
       return NextResponse.next();
     }
   }
@@ -43,12 +48,15 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/profile",
-    "/profile/:page*",
     "/admin",
     "/sign-in",
     "/sign-up",
     "/forgot-password",
     "/reset-password",
+    "/profile",
+    "/my-post",
+    "/follower",
+    "/my-favorites",
+    "/change-password",
   ],
 };

@@ -1,5 +1,7 @@
 "use client";
-import { useAppSelector } from "@/redux/hooks";
+import { userLogout } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import Cookies from "js-cookie";
 import { LogOut, PenBox, User } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -12,7 +14,14 @@ import {
 } from "../ui/dropdown-menu";
 
 const HeaderMenu = () => {
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(userLogout());
+    Cookies.remove("token", { path: "" });
+  };
+
   return (
     <div className="flex space-x-5 items-center">
       {user ? (
@@ -32,7 +41,7 @@ const HeaderMenu = () => {
             <button className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 gap-2 cursor-pointer hover:bg-slate-100">
               <PenBox size={16} /> Create Post
             </button>
-            <DropdownMenuItem className="gap-2 cursor-pointer">
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut size={16} /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>

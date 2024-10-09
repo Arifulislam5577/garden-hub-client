@@ -1,16 +1,14 @@
 "use client";
-import { useSignInMutation } from "@/redux/api/authApi";
-import { userLogin } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { useForgotPassMutation } from "@/redux/api/authApi";
 import { TErrorResponse } from "@/types";
-import { signInValidator } from "@/validation";
+import { changePasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,30 +16,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-const SignIn = () => {
-  const dispatch = useAppDispatch();
-  const [signIn, { isLoading, isError, isSuccess, error }] =
-    useSignInMutation();
+const ChangePassword = () => {
+  const [sendCode, { isLoading, isError, isSuccess, error }] =
+    useForgotPassMutation();
 
   const form = useForm({
-    resolver: zodResolver(signInValidator),
+    resolver: zodResolver(changePasswordValidator),
     defaultValues: {
-      email: "",
-      pass: "",
+      newPassword: "",
+      newPasswordConfirm: "",
+      oldPassword: "",
     },
   });
   const { control, handleSubmit, reset } = form;
-
-  const onSubmit = handleSubmit(async (value) => {
-    const { data, token } = await signIn({
-      password: value.pass,
-      ...value,
-    }).unwrap();
-
-    dispatch(userLogin({ user: data, token }));
+  const onSubmit = handleSubmit((value) => {
+    sendCode({ ...value });
   });
 
   const err = error as TErrorResponse;
@@ -49,30 +41,41 @@ const SignIn = () => {
   useEffect(() => {
     if (isSuccess) {
       reset();
-      toast("Sign up successfully");
-      redirect("/");
+      toast("Reset Token sent to your email");
+      redirect("/reset-password");
     }
 
     if (isError) {
       toast.error(err?.data?.message);
     }
   }, [error, isError, isSuccess, reset, err?.data]);
-
   return (
     <Form {...form}>
       <form onSubmit={onSubmit}>
         <FormField
           control={control}
-          name="email"
+          name="newPassword"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <FormLabel>Email</FormLabel>
+              <FormLabel>New Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="New Password" {...field} />
+              </FormControl>
+              <FormMessage className="font-normal" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={control}
+          name="newPasswordConfirm"
+          render={({ field }) => (
+            <FormItem className="mb-3">
+              <FormLabel>Retype New Password</FormLabel>
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="example@email.com"
+                  type="password"
+                  placeholder="Confirm Password"
                   {...field}
-                  className="py-4"
                 />
               </FormControl>
               <FormMessage className="font-normal" />
@@ -81,39 +84,28 @@ const SignIn = () => {
         />
         <FormField
           control={control}
-          name="pass"
+          name="oldPassword"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <div>
-                <FormLabel>Password</FormLabel>
-              </div>
+              <FormLabel>Current Password</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="password"
                   type="password"
+                  placeholder="Current Password"
                   {...field}
-                  className="py-4"
                 />
               </FormControl>
-
               <FormMessage className="font-normal" />
             </FormItem>
           )}
         />
+
         <Button disabled={isLoading} type="submit" className="w-full">
-          {isLoading ? "Loading..." : "Sign In"}
+          {isLoading ? "Loading..." : "Change Password"}
         </Button>
-        <div className="text-right mt-3">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-medium text-slate-900 hover:underline text-center"
-          >
-            Forgot Password?
-          </Link>
-        </div>
       </form>
     </Form>
   );
 };
 
-export default SignIn;
+export default ChangePassword;

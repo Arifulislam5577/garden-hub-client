@@ -1,4 +1,4 @@
-import { Bookmark, HomeIcon, LogOut, PenBox, Users } from "lucide-react";
+import { Bookmark, HomeIcon, Lock, LogOut, PenBox, Users } from "lucide-react";
 import Link from "next/link";
 import { ReactNode } from "react";
 
@@ -7,7 +7,7 @@ const UserLayout = ({ children }: { children: ReactNode }) => {
     <section>
       <div className="max-w-7xl mx-auto py-20">
         <div className="bg-white p-8 rounded-xl flex items-start gap-5">
-          <div className="w-[200px] border-r border-slate-100 pr-2">
+          <div className="w-[240px] border-r border-slate-100 pr-2">
             <ul className="space-y-2">
               <Link
                 href="/profile"
@@ -27,7 +27,12 @@ const UserLayout = ({ children }: { children: ReactNode }) => {
               >
                 <Users size={20} /> Follower
               </Link>
-
+              <Link
+                href="/change-password"
+                className="flex items-center gap-2 font-medium text-base w-full p-2.5 rounded-md cursor-pointer hover:bg-green-50 hover:text-green-500 transition-all duration-300"
+              >
+                <Lock size={20} /> Change Password
+              </Link>
               <Link
                 href="/my-favorites"
                 className="flex items-center gap-2 font-medium text-base w-full p-2.5 rounded-md cursor-pointer hover:bg-green-50 hover:text-green-500 transition-all duration-300"
