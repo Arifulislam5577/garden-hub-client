@@ -1,7 +1,12 @@
 "use client";
+import { forgotPasswordAction } from "@/actions/actions";
 import { forgotPasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -14,16 +19,39 @@ import {
 import { Input } from "../ui/input";
 
 const ForgotPassword = () => {
+  const router = useRouter();
+  const { mutate, isPending, isSuccess } = useMutation<
+    unknown,
+    Error,
+    FieldValues
+  >({
+    mutationKey: ["signIn"],
+    mutationFn: async (userData) => await forgotPasswordAction(userData),
+    onSuccess: () => {
+      toast.success("Reset token sent to your email");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const form = useForm({
     resolver: zodResolver(forgotPasswordValidator),
     defaultValues: {
       email: "",
     },
   });
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, reset } = form;
   const onSubmit = handleSubmit((value) => {
-    console.log(value);
+    mutate(value);
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+      router.push("/reset-password");
+    }
+  }, [isSuccess, reset, router]);
 
   return (
     <Form {...form}>
@@ -47,8 +75,8 @@ const ForgotPassword = () => {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          Send Code
+        <Button disabled={isPending} type="submit" className="w-full">
+          {isPending ? "Sending..." : "Send Code"}
         </Button>
       </form>
     </Form>

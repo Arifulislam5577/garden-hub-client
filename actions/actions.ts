@@ -1,55 +1,78 @@
-// "use server";
-// import {} from "@/components/auth/SignIn";
-// import axios from "axios";
-// import { cookies } from "next/headers";
-// import { FieldValue } from "react-hook-form";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use server";
+import { signIn } from "@/app/auth";
+import axios from "axios";
+import { cookies } from "next/headers";
+import { FieldValues } from "react-hook-form";
 
-// export const signInAction = async (formData: FieldValue<any, any, any>) => {
-//   try {
-//     const { data, status } = await axios.post(
-//       `http://localhost:5000/api/v1/user/sign-in`,
-//       formData
-//     );
+export const signInAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/sign-in`,
+      formData
+    );
 
-//     if (data.success && status === 200) {
-//       cookies().set("token", data?.token);
-//     }
+    if (data.success) {
+      cookies().set("token", data?.token);
 
-//     return data?.data;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
 
-// export const getCurrentUser = async () => {
-//   try {
-//     const token = cookies().get("token")?.value;
+      return { ...data, signInRes: res };
+    }
 
-//     if (!token) {
-//       return null;
-//     }
+    return data;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || "Failed to sign In";
+    throw new Error(message);
+  }
+};
 
-//     const res = await fetch(`http://localhost:5000/api/v1/user/profile`, {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
+export const signUpAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/sign-up`,
+      formData
+    );
 
-//     const { data, success } = await res.json();
+    return data;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || "Failed to sign up";
+    throw new Error(message);
+  }
+};
 
-//     if (!success) {
-//       return null;
-//     }
+export const forgotPasswordAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/forgot-password`,
+      formData
+    );
 
-//     return data;
-//   } catch (error) {
-//     console.log(error);
-//     throw new Error("Failed to get new access token");
-//   }
-// };
+    return data;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || "Failed to sign up";
+    throw new Error(message);
+  }
+};
 
-// export const logout = () => {
-//   cookies().delete("token");
-// };
+export const resetPasswordAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/reset-password`,
+      formData
+    );
+
+    return data;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || "Failed to sign up";
+    throw new Error(message);
+  }
+};

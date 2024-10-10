@@ -1,7 +1,12 @@
 "use client";
+import { resetPasswordAction } from "@/actions/actions";
 import { resetPasswordValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -14,21 +19,44 @@ import {
 import { Input } from "../ui/input";
 
 const ResetPassword = () => {
+  const router = useRouter();
+  const { mutate, isPending, isSuccess } = useMutation<
+    unknown,
+    Error,
+    FieldValues
+  >({
+    mutationKey: ["signIn"],
+    mutationFn: async (userData) => await resetPasswordAction(userData),
+    onSuccess: () => {
+      toast.success("Password reset successful");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   const form = useForm({
     resolver: zodResolver(resetPasswordValidator),
     defaultValues: {
-      pass: "",
       token: "",
+      pass: "",
     },
   });
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, reset } = form;
   const onSubmit = handleSubmit((value) => {
-    const resetData = {
-      password: value.pass,
-      resetToken: value.token,
-    };
-    console.log(resetData);
+    const { token, pass } = value;
+    mutate({
+      resetToken: token,
+      password: pass,
+    });
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+      router.push("/sign-in");
+    }
+  }, [isSuccess, reset, router]);
 
   return (
     <Form {...form}>
@@ -61,8 +89,8 @@ const ResetPassword = () => {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          Reset Token
+        <Button disabled={isPending} type="submit" className="w-full">
+          {isPending ? "Resetting password..." : "Reset Password"}
         </Button>
       </form>
     </Form>

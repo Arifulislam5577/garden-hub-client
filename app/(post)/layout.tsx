@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import AppProvider from "@/components/shared/AppProvider";
 import Header from "@/components/shared/Header";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -25,8 +26,10 @@ export default function ProfileLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <main>
-          <Header />
-          {children}
+          <AppProvider>
+            <Header />
+            {children}
+          </AppProvider>
         </main>
       </body>
     </html>

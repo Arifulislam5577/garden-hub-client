@@ -1,11 +1,23 @@
 "use client";
+import { TUser } from "@/types";
+import { LogOut, PenBox, User } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { buttonVariants } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const HeaderMenu = () => {
+  const { data, status } = useSession();
+  const user = data?.user as TUser | undefined;
   return (
     <div className="flex space-x-5 items-center">
-      {/* {user ? (
+      {status === "authenticated" ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>
@@ -22,7 +34,7 @@ const HeaderMenu = () => {
             <button className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 gap-2 cursor-pointer hover:bg-slate-100">
               <PenBox size={16} /> Create Post
             </button>
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem className="gap-2" onClick={() => signOut()}>
               <LogOut size={16} /> Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -36,14 +48,7 @@ const HeaderMenu = () => {
             Sign Up
           </Link>
         </>
-      )} */}
-
-      <Link href="/sign-in" className={buttonVariants({ variant: "link" })}>
-        Sign In
-      </Link>
-      <Link href="/sign-up" className={buttonVariants()}>
-        Sign Up
-      </Link>
+      )}
     </div>
   );
 };

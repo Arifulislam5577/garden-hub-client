@@ -1,5 +1,3 @@
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-
 export type TError = {
   data: {
     success: boolean;
@@ -9,7 +7,7 @@ export type TError = {
   status: number;
 };
 
-export type TErrorResponse = TError & FetchBaseQueryError;
+export type TErrorResponse = TError | Error;
 
 export type TUser = {
   _id: string;
