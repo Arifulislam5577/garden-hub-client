@@ -43,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.user = user as TUser;
       }
+
       return token;
     },
     async session({ session, token }) {

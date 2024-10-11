@@ -57,7 +57,7 @@ export const forgotPasswordAction = async (formData: FieldValues) => {
     return data;
   } catch (error: any) {
     const message =
-      error.response?.data?.message || error.message || "Failed to sign up";
+      error.response?.data?.message || error.message || "Failed to Update";
     throw new Error(message);
   }
 };
@@ -72,7 +72,49 @@ export const resetPasswordAction = async (formData: FieldValues) => {
     return data;
   } catch (error: any) {
     const message =
-      error.response?.data?.message || error.message || "Failed to sign up";
+      error.response?.data?.message || error.message || "Failed to Reset";
+    throw new Error(message);
+  }
+};
+
+export const updateProfileAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/profile`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message || error.message || "Failed to Update";
+    throw new Error(message);
+  }
+};
+
+export const changePasswordAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/change-password`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message || error.message || "Failed to Update";
     throw new Error(message);
   }
 };

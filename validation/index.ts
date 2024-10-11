@@ -38,7 +38,6 @@ const signUpValidator = z.object({
       message: "Password must be at least 6 characters",
     }),
 });
-
 const signInValidator = z.object({
   email: z
     .string({ required_error: "Email is required" })
@@ -98,6 +97,37 @@ const changePasswordValidator = z.object({
       message: "Current Password must be at least 6 characters",
     }),
 });
+const updateProfileValidator = z.object({
+  name: z
+    .string({
+      required_error: "Name is required",
+      invalid_type_error: "Name must be a string",
+    })
+    .min(4, {
+      message: "Name must be at least 4 characters",
+    }),
+  address: z
+    .string({
+      required_error: "Address is required",
+      invalid_type_error: "Address must be a string",
+    })
+    .min(4, {
+      message: "Address must be at least 4 characters",
+    }),
+  phone: z
+    .string({
+      required_error: "Phone is required",
+      invalid_type_error: "Phone must be a string",
+    })
+    .min(11, {
+      message: "Phone must be at least 11 characters",
+    }),
+  email: z
+    .string({ required_error: "Email is required" })
+    .email({ message: "Email must be a valid email address" })
+    .trim(),
+  img: z.string({ required_error: "Image is required" }),
+});
 
 export {
   changePasswordValidator,
@@ -105,4 +135,5 @@ export {
   resetPasswordValidator,
   signInValidator,
   signUpValidator,
+  updateProfileValidator,
 };
