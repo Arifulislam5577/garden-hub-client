@@ -128,9 +128,36 @@ const updateProfileValidator = z.object({
     .trim(),
   img: z.string({ required_error: "Image is required" }),
 });
+const createPostValidation = z.object({
+  content: z
+    .string({
+      required_error: "Content is required",
+    })
+    .min(4, {
+      message: "Content must be at least 4 characters",
+    }),
+  image: z.any().refine((file) => file instanceof FileList && file.length > 0, {
+    message: "Image is required",
+  }),
+  category: z
+    .string({
+      required_error: "Category is required",
+    })
+    .min(1, {
+      message: "Category must be required",
+    }),
+  postType: z
+    .string({
+      required_error: "Post type is required",
+    })
+    .min(1, {
+      message: "postType must be required",
+    }),
+});
 
 export {
   changePasswordValidator,
+  createPostValidation,
   forgotPasswordValidator,
   resetPasswordValidator,
   signInValidator,

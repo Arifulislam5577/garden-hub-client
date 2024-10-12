@@ -8,7 +8,6 @@ const Header = () => {
         <Link href="/" className="text-xl font-bold">
           <span className="text-green-500">Garden</span>Hub
         </Link>
-
         <HeaderMenu />
       </div>
     </header>

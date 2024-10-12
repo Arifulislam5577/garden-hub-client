@@ -3,6 +3,8 @@ import { TUser } from "@/types";
 import { LogOut, PenBox, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useState } from "react";
+import CreatePost from "../post/CreatePost";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { buttonVariants } from "../ui/button";
 import {
@@ -13,6 +15,7 @@ import {
 } from "../ui/dropdown-menu";
 
 const HeaderMenu = () => {
+  const [open, setOpen] = useState(false);
   const { data, status } = useSession();
   const user = data?.user as TUser | undefined;
   return (
@@ -31,7 +34,10 @@ const HeaderMenu = () => {
                 <User size={16} /> Profile
               </Link>
             </DropdownMenuItem>
-            <button className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 gap-2 cursor-pointer hover:bg-slate-100">
+            <button
+              onClick={() => setOpen(true)}
+              className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 gap-2 cursor-pointer hover:bg-slate-100"
+            >
               <PenBox size={16} /> Create Post
             </button>
             <DropdownMenuItem className="gap-2" onClick={() => signOut()}>
@@ -49,6 +55,8 @@ const HeaderMenu = () => {
           </Link>
         </>
       )}
+
+      <CreatePost open={open} setOpen={setOpen} />
     </div>
   );
 };

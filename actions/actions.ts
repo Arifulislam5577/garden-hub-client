@@ -118,3 +118,24 @@ export const changePasswordAction = async (formData: FieldValues) => {
     throw new Error(message);
   }
 };
+
+export const createPostAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/post`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message || error.message || "Failed to Create Post";
+    throw new Error(message);
+  }
+};
