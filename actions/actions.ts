@@ -182,3 +182,25 @@ export const postCommentAction = async (formData: FieldValues) => {
     throw new Error(message);
   }
 };
+export const getProfileAction = async () => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/user/profile`,
+
+      {
+        headers: {
+          authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to Create comment";
+    throw new Error(message);
+  }
+};

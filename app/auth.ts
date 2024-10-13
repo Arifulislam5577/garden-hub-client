@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TUser } from "@/types";
 import axios from "axios";
 import NextAuth from "next-auth";
@@ -59,5 +58,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
 });

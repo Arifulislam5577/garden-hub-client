@@ -19,7 +19,7 @@ const profileRoutes = [
 ];
 
 export async function middleware(req: NextRequest) {
-  const secret = process.env.AUTH_SECRET;
+  const secret = process.env.NEXT_PUBLIC_AUTH_SECRET;
   const token = await getToken({ req, secret });
 
   const { pathname } = req.nextUrl;

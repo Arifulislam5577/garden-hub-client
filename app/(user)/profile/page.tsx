@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { updateProfileAction } from "@/actions/actions";
+import { getProfileAction, updateProfileAction } from "@/actions/actions";
+import { queryClient } from "@/components/shared/AppProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,21 +12,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import useServerAction from "@/hooks/useServerAction";
 import { TUser } from "@/types";
 import { updateProfileValidator } from "@/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Camera } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const Profile = () => {
-  const { mutate, isPending } = useServerAction({
-    mutationFn: updateProfileAction,
-    mutationKey: ["update-profile"],
-    onSuccessMessage: "Profile updated",
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (formData: FieldValues) => updateProfileAction(formData),
+    onSuccess: () => {
+      toast.success("Profile Updated");
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
   });
 
   const [resource, setResource] = useState<CloudinaryUploadWidgetInfo>();
@@ -50,24 +53,31 @@ const Profile = () => {
     mutate(value);
   });
 
+  const { data } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => getProfileAction(),
+  });
+
+  const profile = data?.data as TUser | undefined;
+
   useEffect(() => {
-    if (user) {
+    if (profile) {
       reset({
-        name: user?.name,
-        email: user?.email,
-        address: user?.address,
-        img: resource ? resource?.secure_url : user?.img,
-        phone: user?.phone,
+        name: profile?.name,
+        email: profile?.email,
+        address: profile?.address,
+        img: resource ? resource?.secure_url : profile?.img,
+        phone: profile?.phone,
       });
     }
-  }, [user, reset, resource]);
+  }, [profile, reset, resource]);
 
   return (
     <div className="flex basis-0 items-stretch gap-10">
       <div className="basis-1/3 flex flex-col items-center text-center border p-5 border-slate-100 gap-5">
         <div className="size-20 rounded-full border border-slate-100 flex items-center justify-center relative group:">
           <Avatar className="size-[75px]">
-            <AvatarImage src={resource?.secure_url ?? user?.img} />
+            <AvatarImage src={resource?.secure_url ?? profile?.img} />
             <AvatarFallback>GH</AvatarFallback>
           </Avatar>
           <CldUploadWidget
@@ -97,10 +107,10 @@ const Profile = () => {
         </div>
 
         <div>
-          <h1 className="text-xl font-bold">{user?.name}</h1>
-          <p className="text-slate-500 text-sm">{user?.email}</p>
-          <p className="text-slate-500 text-sm">{user?.address}</p>
-          <p className="text-slate-500 text-sm">{user?.phone}</p>
+          <h1 className="text-xl font-bold">{profile?.name}</h1>
+          <p className="text-slate-500 text-sm">{profile?.email}</p>
+          <p className="text-slate-500 text-sm">{profile?.address}</p>
+          <p className="text-slate-500 text-sm">{profile?.phone}</p>
         </div>
       </div>
       <Form {...form}>
