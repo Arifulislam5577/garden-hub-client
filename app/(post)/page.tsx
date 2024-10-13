@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Bookmark,
@@ -11,13 +10,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import Post from "@/components/shared/Post";
+import PostList from "@/components/post/PostList";
 
 export default async function Home() {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/post`, {
-    cache: "no-store",
-  }).then((res) => res.json());
-
   return (
     <section className="grid grid-cols-12 gap-5">
       <div className="col-span-2 bg-white h-[calc(100vh-75px)]">
@@ -90,14 +85,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <div
-        id="scroll-bar"
-        className="col-span-8 h-[calc(100vh-75px)] overflow-y-auto py-5 space-y-5"
-      >
-        {data?.data?.map((post: any) => (
-          <Post key={post._id} post={post} />
-        ))}
-      </div>
+      <PostList />
       <div className="col-span-2 bg-white h-[calc(100vh-75px)]">
         <div className="px-10 py-5 space-y-5">
           <div className="space-y-5">

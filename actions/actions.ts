@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { signIn } from "@/app/auth";
 import axios from "axios";
@@ -127,6 +126,27 @@ export const createPostAction = async (formData: FieldValues) => {
       {
         headers: {
           Authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message || error.message || "Failed to Create Post";
+    throw new Error(message);
+  }
+};
+
+export const postLikeAction = async (postId: string) => {
+  try {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/post/${postId}`,
+      null,
+      {
+        headers: {
+          authorization: `Bearer ${cookies().get("token")?.value}`,
         },
       }
     );

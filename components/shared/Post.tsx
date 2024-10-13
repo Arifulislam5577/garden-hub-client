@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +18,29 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
+import { postLikeAction } from "@/actions/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TUser } from "@/types";
+import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { queryClient } from "./AppProvider";
 
 const Post = ({ post }: { post: any }) => {
   const { data } = useSession();
 
   const user = (data?.user as TUser) || null;
+
+  const { mutate } = useMutation({
+    mutationFn: async () => await postLikeAction(post?._id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+    },
+  });
+
+  const isUserAlreadLiked = post?.likes?.find(
+    (data: any) => data.userId?._id.toString() === user?._id.toString()
+  );
 
   return (
     <div className="bg-white rounded-xl p-5 space-y-2.5 mx-auto max-w-3xl">
@@ -86,8 +99,17 @@ const Post = ({ post }: { post: any }) => {
       <div className="space-y-2.5">
         <div className="border-y border-y-slate-100 py-1.5 flex items-center justify-between">
           <div>
-            <Button variant={"ghost"} className="gap-1.5">
-              <Heart size={16} /> Upvote
+            <Button
+              onClick={() => mutate(post?._id)}
+              variant={"ghost"}
+              className="gap-1.5"
+            >
+              {isUserAlreadLiked ? (
+                <Heart size={16} className="fill-red-500" />
+              ) : (
+                <Heart size={16} />
+              )}
+              Upvote
             </Button>
             <Button variant={"ghost"} className="gap-1.5">
               <MessageCircleMore size={16} /> Comments
