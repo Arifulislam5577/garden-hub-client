@@ -159,3 +159,26 @@ export const postLikeAction = async (postId: string) => {
     throw new Error(message);
   }
 };
+
+export const postCommentAction = async (formData: FieldValues) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/post/${formData?.postId}`,
+      formData?.commentText,
+      {
+        headers: {
+          authorization: `Bearer ${cookies().get("token")?.value}`,
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to Create comment";
+    throw new Error(message);
+  }
+};

@@ -18,12 +18,17 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-import { postLikeAction } from "@/actions/actions";
+import { postCommentAction, postLikeAction } from "@/actions/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TUser } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { queryClient } from "./AppProvider";
 
 const Post = ({ post }: { post: any }) => {
@@ -38,9 +43,47 @@ const Post = ({ post }: { post: any }) => {
     },
   });
 
+  const { mutate: mutateComment, isSuccess } = useMutation({
+    mutationFn: async (data: FieldValues) => await postCommentAction(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] });
+    },
+  });
+
   const isUserAlreadLiked = post?.likes?.find(
     (data: any) => data.userId?._id.toString() === user?._id.toString()
   );
+
+  const formValidate = z.object({
+    commentText: z
+      .string({
+        required_error: "Comment is required",
+        invalid_type_error: "Comment must be a string",
+      })
+      .min(1, {
+        message: "Comment must be at least 1 character",
+      }),
+  });
+
+  const form = useForm({
+    resolver: zodResolver(formValidate),
+    defaultValues: {
+      commentText: "",
+    },
+  });
+  const { control, handleSubmit, reset } = form;
+
+  const onSubmit = handleSubmit((value) => {
+    console.log(value);
+    mutateComment({
+      postId: post?._id,
+      commentText: value,
+    });
+  });
+
+  useEffect(() => {
+    if (isSuccess) reset();
+  }, [isSuccess, reset]);
 
   return (
     <div className="bg-white rounded-xl p-5 space-y-2.5 mx-auto max-w-3xl">
@@ -132,12 +175,31 @@ const Post = ({ post }: { post: any }) => {
             <AvatarImage src={user?.img} alt="user" />
             <AvatarFallback>US</AvatarFallback>
           </Avatar>
-          <form className="flex-1">
-            <Input placeholder={user?.name + " Write your comment"} />
-          </form>
-          <Button variant={"destructive"}>
-            <SendHorizonal />
-          </Button>
+          <Form {...form}>
+            <form
+              onSubmit={onSubmit}
+              className="flex flex-1 items-center gap-5"
+            >
+              <FormField
+                control={control}
+                name="commentText"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder={user?.name + " Write your comment"}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" variant={"destructive"}>
+                <SendHorizonal />
+              </Button>
+            </form>
+          </Form>
         </div>
 
         {post?.comments?.length > 0 && (
